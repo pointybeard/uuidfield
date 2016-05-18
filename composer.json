@@ -1,0 +1,16 @@
+{
+    "name": "pointybeard/uuid-field",
+    "description": "Dedicated UUID storage field for Symphony CMS",
+    "type": "Utility",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Alistair Kearney",
+            "email": "hi@alistairkearney.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.6.6",
+        "ramsey/uuid": "~3.4"
+    }
+}
