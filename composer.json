@@ -11,6 +11,7 @@
     ],
     "require": {
         "php": ">=5.6.6",
-        "ramsey/uuid": "~3.4"
+        "ramsey/uuid": "~3.4",
+	    "paragonie/random_compat": "<9.99"
     }
 }
