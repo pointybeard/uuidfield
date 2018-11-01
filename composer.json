@@ -1,12 +1,12 @@
 {
     "name": "pointybeard/uuid-field",
-    "description": "Dedicated UUID storage field for Symphony CMS",
+    "description": "A field for Symphony CMS that generates UUID values upon saving.",
     "type": "Utility",
     "license": "MIT",
     "authors": [
         {
-            "name": "Alistair Kearney",
-            "email": "hi@alistairkearney.com"
+            "name": "Alannah Kearney",
+            "email": "hi@alannahkearney.com"
         }
     ],
     "require": {

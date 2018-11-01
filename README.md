@@ -1,23 +1,35 @@
-# UUID Field
+# UUID Field for Symphony CMS
 
-Input field that stores dedicated UUID values.
+- Version: v1.0.1
+- Date: November 01 2018
+- [Release notes](https://github.com/pointybeard/uuidfield/blob/master/CHANGELOG.md)
+- [GitHub repository](https://github.com/pointybeard/uuidfield)
+
+A field for Symphony CMS that generates UUID values upon saving.
 
 ## Installation
 
-Information about [installing and updating extensions](http://getsymphony.com/learn/tasks/view/install-an-extension/) can be found in the Symphony documentation at <http://getsymphony.com/learn/>.
-
-1. Upload the 'uuidfield' folder in this archive to your Symphony 'extensions' folder.
-2. Enable it by selecting the "Field: UUID", choose Enable from the with-selected menu, then click Apply.
-3. You can now add the "UUID" field to your sections.
+This is an extension for [Symphony CMS](http://getsymphony.com). Add it to the `/extensions` folder of your Symphony CMS installation, then enable it though the interface.
 
 ### Requirements
 
-This extension requires the **[ramsey/uuid library](https://packagist.org/packages/ramsey/uuid)** (`ramsey/uuid`) to be installed via Composer. Either require this in your main composer.json file, or run `composer install` on the `extension/uuidfield` directory.
+This extension requires the **[ramsey/uuid library](https://packagist.org/packages/ramsey/uuid)** (`ramsey/uuid`) and **[paragonie/random_compat](https://packagist.org/packages/paragonie/random_compat)** to be installed via Composer. Either require this in your main composer.json file, or run `composer install` on the `extension/uuidfield` directory.
 
     "require": {
         "php": ">=5.6.6",
-        "ramsey/uuid": "~3.4"
+        "ramsey/uuid": "~3.4",
+        "paragonie/random_compat": "<9.99"
     }
 
-## CHANGE LOG
-    1.0.0 - Initial release
+## Support
+
+If you believe you have found a bug, please report it using the [GitHub issue tracker](https://github.com/pointybeard/uuidfield/issues),
+or better yet, fork the library and submit a pull request.
+
+## Contributing
+
+We encourage you to contribute to this project. Please check out the [Contributing documentation](https://github.com/pointybeard/uuidfield/blob/master/CONTRIBUTING.md) for guidelines about how to get involved.
+
+## License
+
+"UUID Field for Symphony CMS" is released under the [MIT License](http://www.opensource.org/licenses/MIT).
