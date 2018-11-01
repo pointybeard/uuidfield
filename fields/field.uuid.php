@@ -71,6 +71,24 @@ class FieldUUID extends Field implements ExportableField, ImportableField
         return General::validateString($data, "@^[A-G0-9]{8}-[A-G0-9]{4}-[A-G0-9]{4}-[A-G0-9]{4}-[A-G0-9]{12}$@i");
     }
 
+    private function isUnique($value, $entryId=null)
+    {
+        $count = (int)Symphony::Database()->fetchVar(
+            'count',
+            0,
+            sprintf(
+                "SELECT COUNT(*) as `count`
+                FROM `tbl_entries_data_%d`
+                WHERE %s AND `value` = '%s'",
+                $this->get('id'),
+                (is_null($entryId) ? '1' : "`entry_id` != {$entryId}"),
+                $value
+            )
+        );
+
+        return ($count <= 0);
+    }
+
 
     /*-------------------------------------------------------------------------
         Settings:
@@ -83,27 +101,20 @@ class FieldUUID extends Field implements ExportableField, ImportableField
         }
     }
 
+    public function appendStatusFooter(XMLElement &$wrapper)
+    {
+        $fieldset = new XMLElement('fieldset');
+        $div = new XMLElement('div', null, ['class' => 'two columns']);
+
+        $this->appendShowColumnCheckbox($div);
+
+        $fieldset->appendChild($div);
+        $wrapper->appendChild($fieldset);
+    }
+
     public function displaySettingsPanel(XMLElement &$wrapper, $errors = null)
     {
         parent::displaySettingsPanel($wrapper, $errors);
-
-        // Options
-        $div = new XMLElement('div', null, array('class' => 'two columns'));
-        $wrapper->appendChild($div);
-
-        // Hide when prepopulated
-        $label = Widget::Label();
-        $label->setAttribute('class', 'column');
-        $input = Widget::Input('fields['.$this->get('sortorder').'][auto_generate]', 'yes', 'checkbox');
-
-        if ($this->get('auto_generate') == 'yes') {
-            $input->setAttribute('checked', 'checked');
-        }
-
-        $label->setValue($input->generate() . ' ' . __('Auto generate UUID when blank'));
-        $div->appendChild($label);
-
-        // Requirements and table display
         $this->appendStatusFooter($wrapper);
     }
 
@@ -118,10 +129,7 @@ class FieldUUID extends Field implements ExportableField, ImportableField
             return false;
         }
 
-        $fields = [];
-        $fields['auto_generate'] = $this->get('auto_generate') == 'yes' ? 'yes' : 'no';
-
-        return FieldManager::saveSettings($id, $fields);
+        return FieldManager::saveSettings($id, []);
     }
 
     /*-------------------------------------------------------------------------
@@ -133,11 +141,30 @@ class FieldUUID extends Field implements ExportableField, ImportableField
         $value = General::sanitize(isset($data['value']) ? $data['value'] : null);
         $label = Widget::Label($this->get('label'));
 
-        if ($this->get('required') !== 'yes') {
-            $label->appendChild(new XMLElement('i', __('Optional')));
+        if (strlen(trim($value)) <= 0) {
+            $value = Uuid::uuid1()->toString();
         }
 
-        $label->appendChild(Widget::Input('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, (strlen($value) != 0 ? $value : null)));
+        // Add the disabled field. It won't make it to the POST data
+        $label->appendChild(Widget::Input(
+            'uuidField-disabeld',
+            $value,
+            'text',
+            ['disabled' => 'disabled']
+        ));
+
+        // Add hidden field with actual value
+        $label->appendChild(Widget::Input(
+            sprintf(
+                'fields%s[%s]%s',
+                $fieldnamePrefix,
+                $this->get('element_name'),
+                $fieldnamePostfix
+            ),
+            $value,
+            'text',
+            ['hidden' => 'hidden']
+        ));
 
         if ($flagWithError != null) {
             $wrapper->appendChild(Widget::Error($label, $flagWithError));
@@ -154,13 +181,13 @@ class FieldUUID extends Field implements ExportableField, ImportableField
             $data = $data['value'];
         }
 
-        if ($this->get('required') == 'yes' && $this->get('auto_generate') != 'yes' && strlen(trim($data)) == 0) {
-            $message = __('‘%s’ is a required field.', array($this->get('label')));
-            return self::__MISSING_FIELDS__;
+        if (!$this->__applyValidationRules($data)) {
+            $message = __('‘%s’ is not a valid UUID. Please check the contents.', [$this->get('label')]);
+            return self::__INVALID_FIELDS__;
         }
 
-        if (!$this->__applyValidationRules($data)) {
-            $message = __('‘%s’ is not a valid UUID. Please check the contents.', array($this->get('label')));
+        if (!$this->isUnique($data, $entry_id)) {
+            $message = __('‘%s’ must be unique.', [$this->get('label')]);
             return self::__INVALID_FIELDS__;
         }
 
@@ -171,10 +198,8 @@ class FieldUUID extends Field implements ExportableField, ImportableField
     {
         $status = self::__OK__;
 
-        if ($this->get('auto_generate') == 'yes' && strlen(trim($data)) == 0) {
+        if (strlen(trim($data)) == 0) {
             $data = Uuid::uuid1()->toString();
-        } elseif (strlen(trim($data)) == 0) {
-            return [];
         }
 
         $result = [
