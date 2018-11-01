@@ -76,8 +76,11 @@ class FieldUUID extends Field implements ExportableField, ImportableField
         Settings:
     -------------------------------------------------------------------------*/
 
-    public function findDefaults(array &$settings){
-        if(!isset($settings['auto_generate'])) $settings['auto_generate'] = 'yes';
+    public function findDefaults(array &$settings)
+    {
+        if (!isset($settings['auto_generate'])) {
+            $settings['auto_generate'] = 'yes';
+        }
     }
 
     public function displaySettingsPanel(XMLElement &$wrapper, $errors = null)
@@ -85,7 +88,7 @@ class FieldUUID extends Field implements ExportableField, ImportableField
         parent::displaySettingsPanel($wrapper, $errors);
 
         // Options
-        $div = new XMLElement('div', NULL, array('class' => 'two columns'));
+        $div = new XMLElement('div', null, array('class' => 'two columns'));
         $wrapper->appendChild($div);
 
         // Hide when prepopulated
@@ -93,7 +96,7 @@ class FieldUUID extends Field implements ExportableField, ImportableField
         $label->setAttribute('class', 'column');
         $input = Widget::Input('fields['.$this->get('sortorder').'][auto_generate]', 'yes', 'checkbox');
 
-        if($this->get('auto_generate') == 'yes') {
+        if ($this->get('auto_generate') == 'yes') {
             $input->setAttribute('checked', 'checked');
         }
 
@@ -111,7 +114,9 @@ class FieldUUID extends Field implements ExportableField, ImportableField
         }
 
         $id = $this->get('id');
-        if($id === false) return false;
+        if ($id === false) {
+            return false;
+        }
 
         $fields = [];
         $fields['auto_generate'] = $this->get('auto_generate') == 'yes' ? 'yes' : 'no';
@@ -166,9 +171,8 @@ class FieldUUID extends Field implements ExportableField, ImportableField
     {
         $status = self::__OK__;
 
-        if($this->get('auto_generate') == 'yes' && strlen(trim($data)) == 0) {
+        if ($this->get('auto_generate') == 'yes' && strlen(trim($data)) == 0) {
             $data = Uuid::uuid1()->toString();
-
         } elseif (strlen(trim($data)) == 0) {
             return [];
         }
@@ -284,7 +288,7 @@ class FieldUUID extends Field implements ExportableField, ImportableField
 
         if (self::isFilterRegex($data[0])) {
             $this->buildRegexSQL($data[0], array('value'), $joins, $where);
-        } else if ($andOperation) {
+        } elseif ($andOperation) {
             foreach ($data as $value) {
                 $this->_key++;
                 $value = $this->cleanValue($value);
@@ -346,5 +350,4 @@ class FieldUUID extends Field implements ExportableField, ImportableField
             );
         }
     }
-
 }
