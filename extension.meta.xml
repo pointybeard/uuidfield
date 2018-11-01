@@ -15,7 +15,10 @@
     <releases>
         <release version="1.0.1" date="2018-11-01" min="2.6">
             - Added paragonie/random_compat (at &lt; 9.99) library to composer.json. Ensures PHP 5.6.x support for the ramsey/uuid package.
-            - Run php-cs-fixer over code base. Added .php_cs.cache to .gitignore
+            - Added isUnique() method in field class.
+            - Removed all code relating to auto_generate. Now always required and auto generates.
+            - New entries will see the UUID field pre-populated.
+            - Field in publish forms is disabled.
         </release>
         <release version="1.0" date="2016-05-18" min="2.6">
             Initial release
