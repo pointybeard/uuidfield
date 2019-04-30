@@ -1,9 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../vendor/autoload.php';
-
-require_once FACE . '/interface.exportablefield.php';
-require_once FACE . '/interface.importablefield.php';
+require_once realpath(__DIR__ . "/../vendor") . "/autoload.php";
 
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\Exception\UnsatisfiedDependencyException;
