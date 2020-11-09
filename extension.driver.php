@@ -23,10 +23,6 @@ use pointybeard\Symphony\Extended;
 if (!class_exists('\\Extension_UuidField')) {
     class Extension_UuidField extends Extended\AbstractExtension
     {
-        public static function init()
-        {
-        }
-
         public function uninstall()
         {
             \Symphony::Database()->query('DROP TABLE `tbl_fields_uuid`');
