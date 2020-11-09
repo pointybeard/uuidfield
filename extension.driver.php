@@ -1,32 +1,48 @@
 <?php
 
-require_once realpath(__DIR__ . "/vendor/autoload.php");
+declare(strict_types=1);
 
-class extension_uuidfield extends Extension
-{
-    public function uninstall()
-    {
-        Symphony::Database()->query("DROP TABLE `tbl_fields_uuid`");
-    }
+if (!file_exists(__DIR__.'/vendor/autoload.php')) {
+    throw new Exception(sprintf('Could not find composer autoload file %s. Did you run `composer update` in %s?', __DIR__.'/vendor/autoload.php', __DIR__));
+}
 
-    public function update($previousVersion = false)
-    {
-        return Symphony::Database()
-            ->query(
-                "ALTER TABLE `tbl_fields_uuid` DROP COLUMN IF EXISTS `auto_generate`;"
-        );
-    }
+require_once __DIR__.'/vendor/autoload.php';
 
-    public function install()
+use pointybeard\Symphony\Extended;
+use pointybeard\Symphony\UuidField;
+
+// Check if the class already exists before declaring it again.
+if (!class_exists('\\Extension_UuidField')) {
+    class Extension_UuidField extends Extended\AbstractExtension
     {
-        return Symphony::Database()
-            ->query(
-                "CREATE TABLE IF NOT EXISTS `tbl_fields_uuid` (
-                  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-                  `field_id` int(11) unsigned NOT NULL,
-                  PRIMARY KEY (`id`),
-                  UNIQUE KEY `field_id` (`field_id`)
-                ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;"
-        );
+        public static function init()
+        {
+        }
+
+        public function uninstall()
+        {
+            \Symphony::Database()->query("DROP TABLE `tbl_fields_uuid`");
+        }
+
+        public function update($previousVersion = false)
+        {
+            return \Symphony::Database()
+                ->query("ALTER TABLE `tbl_fields_uuid` DROP COLUMN IF EXISTS `auto_generate`;")
+            ;
+        }
+
+        public function install()
+        {
+            return \Symphony::Database()
+                ->query(
+                    "CREATE TABLE IF NOT EXISTS `tbl_fields_uuid` (
+                      `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+                      `field_id` int(11) unsigned NOT NULL,
+                      PRIMARY KEY (`id`),
+                      UNIQUE KEY `field_id` (`field_id`)
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;"
+                )
+            ;
+        }
     }
 }
