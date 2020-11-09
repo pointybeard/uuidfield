@@ -2,7 +2,12 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-**View all [Unreleased][] changes here**
+## [1.1.0][] - 2020-11-09
+#### Changed
+-   Require PHP 7.4+
+
+#### Added
+-   Add HasUuidTrait trait for use with Symphony CMS: Section Class Mapper library
 
 ## [1.0.2][] - 2019-04-30
 #### Changed
@@ -23,6 +28,6 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 #### Added
 -   Initial release
 
-[Unreleased]: https://github.com/pointybeard/uuidfield/compare/1.0.2...integration
+[1.1.0]: https://github.com/pointybeard/uuidfield/compare/1.0.2...1.1.0
 [1.0.2]: https://github.com/pointybeard/uuidfield/compare/1.0.1...1.0.2
 [1.0.1]: https://github.com/pointybeard/uuidfield/compare/1.0.0...1.0.1
