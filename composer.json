@@ -1,16 +1,43 @@
 {
-    "name": "pointybeard/uuid-field",
-    "description": "A field for Symphony CMS that generates UUID values upon saving.",
+    "name": "pointybeard/symext_uuid-field",
+    "description": "A field for Symphony CMS that generates UUID values automatically upon saving.",
     "type": "library",
     "license": "MIT",
     "authors": [
         {
             "name": "Alannah Kearney",
-            "email": "hi@alannahkearney.com"
+            "email": "hi@alannahkearney.com",
+            "homepage": "https://github.com/pointybeard",
+            "role": "Developer"
         }
     ],
+    "support": {
+      "issues": "https://github.com/pointybeard/uuidfield/issues",
+      "wiki": "https://github.com/pointybeard/uuidfield/wiki"
+    },
     "require": {
+        "php": ">=7.4",
         "ramsey/uuid": "~3.8",
-        "paragonie/random_compat": "^2"
+        "paragonie/random_compat": "^2",
+        "pointybeard/helpers": "~1.2.0",
+        "pointybeard/symphony-classmapper": "~2.0.0.0",
+        "pointybeard/symphony-extended": "~1.0"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^2.16"
+    },
+    "config": {
+        "sort-packages": true,
+        "process-timeout": 0
+    },
+    "scripts": {
+        "tidy": "php-cs-fixer fix --config=.php_cs.dist -v --using-cache=no",
+        "tidyDry": "@tidy --dry-run"
+    },
+    "minimum-stability": "stable",
+    "autoload": {
+        "psr-4": {
+            "pointybeard\\Symphony\\Extensions\\": "src/"
+        }
     }
 }
