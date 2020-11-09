@@ -1,9 +1,19 @@
 <?php
 
-require_once realpath(__DIR__ . "/../vendor") . "/autoload.php";
+declare(strict_types=1);
+
+/*
+ * This file is part of the "UUID Field for Symphony CMS" repository.
+ *
+ * Copyright 2016-2020 Alannah Kearney <hi@alannahkearney.com>
+ *
+ * For the full copyright and license information, please view the LICENCE
+ * file that was distributed with this source code.
+ */
+
+require_once realpath(__DIR__.'/../vendor').'/autoload.php';
 
 use Ramsey\Uuid\Uuid;
-use Ramsey\Uuid\Exception\UnsatisfiedDependencyException;
 
 class FieldUUID extends Field implements ExportableField, ImportableField
 {
@@ -48,14 +58,14 @@ class FieldUUID extends Field implements ExportableField, ImportableField
     public function createTable()
     {
         return Symphony::Database()->query(
-            "CREATE TABLE IF NOT EXISTS `tbl_entries_data_" . $this->get('id') . "` (
+            'CREATE TABLE IF NOT EXISTS `tbl_entries_data_'.$this->get('id').'` (
               `id` int(11) unsigned NOT null auto_increment,
               `entry_id` int(11) unsigned NOT null,
               `value` varchar(36) default null,
               PRIMARY KEY  (`id`),
               UNIQUE KEY `entry_id` (`entry_id`),
               KEY `value` (`value`)
-            ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;"
+            ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;'
         );
     }
 
@@ -65,12 +75,12 @@ class FieldUUID extends Field implements ExportableField, ImportableField
 
     private function __applyValidationRules($data)
     {
-        return General::validateString($data, "@^[A-G0-9]{8}-[A-G0-9]{4}-[A-G0-9]{4}-[A-G0-9]{4}-[A-G0-9]{12}$@i");
+        return General::validateString($data, '@^[A-G0-9]{8}-[A-G0-9]{4}-[A-G0-9]{4}-[A-G0-9]{4}-[A-G0-9]{12}$@i');
     }
 
-    private function isUnique($value, $entryId=null)
+    private function isUnique($value, $entryId = null)
     {
-        $count = (int)Symphony::Database()->fetchVar(
+        $count = (int) Symphony::Database()->fetchVar(
             'count',
             0,
             sprintf(
@@ -78,14 +88,13 @@ class FieldUUID extends Field implements ExportableField, ImportableField
                 FROM `tbl_entries_data_%d`
                 WHERE %s AND `value` = '%s'",
                 $this->get('id'),
-                (is_null($entryId) ? '1' : "`entry_id` != {$entryId}"),
+                (null === $entryId ? '1' : "`entry_id` != {$entryId}"),
                 $value
             )
         );
 
-        return ($count <= 0);
+        return $count <= 0;
     }
-
 
     /*-------------------------------------------------------------------------
         Settings:
@@ -122,7 +131,7 @@ class FieldUUID extends Field implements ExportableField, ImportableField
         }
 
         $id = $this->get('id');
-        if ($id === false) {
+        if (false === $id) {
             return false;
         }
 
@@ -163,7 +172,7 @@ class FieldUUID extends Field implements ExportableField, ImportableField
             ['hidden' => 'hidden']
         ));
 
-        if ($flagWithError != null) {
+        if (null != $flagWithError) {
             $wrapper->appendChild(Widget::Error($label, $flagWithError));
         } else {
             $wrapper->appendChild($label);
@@ -180,11 +189,13 @@ class FieldUUID extends Field implements ExportableField, ImportableField
 
         if (!$this->__applyValidationRules($data)) {
             $message = __('‘%s’ is not a valid UUID. Please check the contents.', [$this->get('label')]);
+
             return self::__INVALID_FIELDS__;
         }
 
         if (!$this->isUnique($data, $entry_id)) {
             $message = __('‘%s’ must be unique.', [$this->get('label')]);
+
             return self::__INVALID_FIELDS__;
         }
 
@@ -195,12 +206,12 @@ class FieldUUID extends Field implements ExportableField, ImportableField
     {
         $status = self::__OK__;
 
-        if (strlen(trim($data)) == 0) {
+        if (0 == strlen(trim($data))) {
             $data = Uuid::uuid1()->toString();
         }
 
         $result = [
-            'value' => $data
+            'value' => $data,
         ];
 
         return $result;
@@ -214,16 +225,16 @@ class FieldUUID extends Field implements ExportableField, ImportableField
     {
         $value = $data['value'];
 
-        if ($encode === true) {
+        if (true === $encode) {
             $value = General::sanitize($value);
         } else {
-            include_once TOOLKIT . '/class.xsltprocess.php';
+            include_once TOOLKIT.'/class.xsltprocess.php';
 
-            if (!General::validateXML($data['value'], $errors, false, new XsltProcess)) {
+            if (!General::validateXML($data['value'], $errors, false, new XsltProcess())) {
                 $value = html_entity_decode($data['value'], ENT_QUOTES, 'UTF-8');
                 $value = $this->__replaceAmpersands($value);
 
-                if (!General::validateXML($value, $errors, false, new XsltProcess)) {
+                if (!General::validateXML($value, $errors, false, new XsltProcess())) {
                     $value = General::sanitize($data['value']);
                 }
             }
@@ -240,16 +251,16 @@ class FieldUUID extends Field implements ExportableField, ImportableField
 
     public function getImportModes()
     {
-        return array(
-            'getValue' =>       ImportableField::STRING_VALUE,
-            'getPostdata' =>    ImportableField::ARRAY_VALUE
-        );
+        return [
+            'getValue' => ImportableField::STRING_VALUE,
+            'getPostdata' => ImportableField::ARRAY_VALUE,
+        ];
     }
 
     public function prepareImportValue($data, $mode, $entry_id = null)
     {
         $message = $status = null;
-        $modes = (object)$this->getImportModes();
+        $modes = (object) $this->getImportModes();
 
         if ($mode === $modes->getValue) {
             return $data;
@@ -271,10 +282,10 @@ class FieldUUID extends Field implements ExportableField, ImportableField
      */
     public function getExportModes()
     {
-        return array(
+        return [
             'getUnformatted' => ExportableField::UNFORMATTED,
-            'getPostdata' =>    ExportableField::POSTDATA
-        );
+            'getPostdata' => ExportableField::POSTDATA,
+        ];
     }
 
     /**
@@ -282,13 +293,14 @@ class FieldUUID extends Field implements ExportableField, ImportableField
      * possible modes.
      *
      * @param mixed $data
-     * @param integer $mode
-     * @param integer $entry_id
+     * @param int   $mode
+     * @param int   $entry_id
+     *
      * @return string|null
      */
     public function prepareExportValue($data, $mode, $entry_id = null)
     {
-        $modes = (object)$this->getExportModes();
+        $modes = (object) $this->getExportModes();
 
         // Export unformatted:
         if ($mode === $modes->getUnformatted || $mode === $modes->getPostdata) {
@@ -309,10 +321,10 @@ class FieldUUID extends Field implements ExportableField, ImportableField
         $field_id = $this->get('id');
 
         if (self::isFilterRegex($data[0])) {
-            $this->buildRegexSQL($data[0], array('value'), $joins, $where);
+            $this->buildRegexSQL($data[0], ['value'], $joins, $where);
         } elseif ($andOperation) {
             foreach ($data as $value) {
-                $this->_key++;
+                ++$this->_key;
                 $value = $this->cleanValue($value);
                 $joins .= "
                     LEFT JOIN
@@ -327,14 +339,14 @@ class FieldUUID extends Field implements ExportableField, ImportableField
             }
         } else {
             if (!is_array($data)) {
-                $data = array($data);
+                $data = [$data];
             }
 
             foreach ($data as &$value) {
                 $value = $this->cleanValue($value);
             }
 
-            $this->_key++;
+            ++$this->_key;
             $data = implode("', '", $data);
             $joins .= "
                 LEFT JOIN
@@ -357,7 +369,7 @@ class FieldUUID extends Field implements ExportableField, ImportableField
 
     public function buildSortingSQL(&$joins, &$where, &$sort, $order = 'ASC')
     {
-        if (in_array(strtolower($order), array('random', 'rand'))) {
+        if (in_array(strtolower($order), ['random', 'rand'])) {
             $sort = 'ORDER BY RAND()';
         } else {
             $sort = sprintf(
