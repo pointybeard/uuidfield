@@ -206,7 +206,7 @@ class FieldUUID extends Field implements ExportableField, ImportableField
     {
         $status = self::__OK__;
 
-        if (0 == strlen(trim($data))) {
+        if (0 == strlen(trim((string)$data))) {
             $data = Uuid::uuid1()->toString();
         }
 
